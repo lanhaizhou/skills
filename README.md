@@ -12,13 +12,22 @@
 skills/
 ├── README.md                   # 仓库使用与说明文档
 ├── 怎么写好一个 skill.md        # 📘 核心理论：Skill 开发标准化设计指南
-└── h5-code-skill/              # 📱 实战技能：移动端 H5 开发与兼容性避坑指南
-    ├── SKILL.md                # 主技能入口 (Frontmatter、铁律、工作流、参数路由)
-    └── references/             # 按领域划分的深度避坑参考模块
-        ├── html-pitfalls.md    # HTML & 系统能力调用篇
-        ├── css-pitfalls.md     # CSS & 视觉布局适配篇
-        ├── js-pitfalls.md      # JS & 交互逻辑避坑篇
-        └── checklist.md        # 交付前质量检查清单 (P0~P3)
+├── h5-code-skill/              # 📱 实战技能：移动端 H5 开发与兼容性避坑指南
+│   ├── SKILL.md                # 主技能入口 (Frontmatter、铁律、工作流、参数路由)
+│   └── references/             # 按领域划分的深度避坑参考模块
+│       ├── html-pitfalls.md    # HTML & 系统能力调用篇
+│       ├── css-pitfalls.md     # CSS & 视觉布局适配篇
+│       ├── js-pitfalls.md      # JS & 交互逻辑避坑篇
+│       └── checklist.md        # 交付前质量检查清单 (P0~P3)
+└── bulletproof-react-skill/    # 🛡️ 架构技能：Bulletproof React 企业级架构规范指南
+    ├── SKILL.md                # 主技能入口 (单向依赖流、架构铁律、反模式刹车、参数路由)
+    └── references/             # 按维度划分的架构规约与设计模板
+        ├── project-structure.md      # 1. 目录架构、Feature 模块化与 ESLint 边界治理
+        ├── api-layer.md              # 2. 单例 API 客户端、请求三件套与 TanStack Query v5
+        ├── components-and-styling.md # 3. 组件分层、组合模式优于 Props 膨胀、样式设计
+        ├── state-management.md       # 4. 状态分水岭：Server State 与 Client State 绝对隔离
+        ├── testing-and-quality.md    # 5. Vitest + Testing Library 行为驱动测试与质量门禁
+        └── checklist.md              # 6. 交付前与 Code Review 逐级核查清单 (P0~P3)
 ```
 
 ---
@@ -45,6 +54,21 @@ skills/
   * `css-pitfalls.md`：动态视口高度 `100dvh`、Retina 1px 细边框、消除点击灰底、弹性滚动与滚动传播阻断。
   * `js-pitfalls.md`：滚动穿透、软键盘异常、现代 300ms 消除、BFCache 恢复、微信环境适配、二维码识别。
   * `checklist.md`：P0 ~ P3 级别的移动端交付前自查与 Code Review 清单。
+
+### 3. [bulletproof-react-skill](./bulletproof-react-skill/SKILL.md)
+基于 [alan2207/bulletproof-react](https://github.com/alan2207/bulletproof-react) 提炼的 **React 企业级生产架构与工程治理规约**：
+* **四大核心铁律**：
+  * ❌ 严格执行单向依赖流动：`shared` → `features` → `app`，严禁底层模块反向依赖上层。
+  * ❌ 严禁跨 Feature 互相直接引用，Feature 之间完全隔离，组装编排必须在 `app/` 路由层完成。
+  * ❌ 严格隔离 Server State 与 Client State，严禁将接口数据镜像存入全局 Store（如 Zustand/Redux），统一归 TanStack Query 管理。
+  * ❌ 严禁组件内部裸调用网络请求，必须以“Zod Schema/类型 + Fetcher + Query/Mutation Hook”标准三件套封装。
+* **分模块知识体系**：
+  * `project-structure.md`：全局与 Feature 目录组织、单向依赖拓扑、ESLint 边界硬规则与 kebab-case 规范。
+  * `api-layer.md`：Axios 单例封装、TanStack Query v5 `queryOptions` 范式、精确缓存失效、Prefetching 与 MSW 模拟。
+  * `components-and-styling.md`：组件分级、组合模式消除 Props 膨胀、内部渲染函数拆解、第三方组件封装与 Tailwind 规范。
+  * `state-management.md`：状态分类矩阵、Zustand 轻量 Store、Feature-level Store 与 URL 状态优先。
+  * `testing-and-quality.md`：行为驱动测试（Testing Library + Vitest）、Playwright E2E 冒烟测试与工程质量门禁。
+  * `checklist.md`：P0~P3 级别的架构与业务代码交付前逐级自查清单。
 
 ---
 
@@ -82,12 +106,14 @@ git submodule add https://github.com/lanhaizhou/skills.git .agents/skills/my-ski
   ```bash
   mkdir -p ~/.claude/skills/
   cp -r h5-code-skill ~/.claude/skills/
+  cp -r bulletproof-react-skill ~/.claude/skills/
   ```
 
 * **Antigravity 全局生效**：
   ```bash
   mkdir -p ~/.gemini/config/skills/
   cp -r h5-code-skill ~/.gemini/config/skills/
+  cp -r bulletproof-react-skill ~/.gemini/config/skills/
   ```
 
 ---
@@ -98,12 +124,18 @@ git submodule add https://github.com/lanhaizhou/skills.git .agents/skills/my-ski
 
 1. **显式指令唤起**：
    ```bash
-   /h5-code-skill audit          # 对当前页面进行移动端兼容性审查
-   /h5-code-skill fix scroll     # 获取生产级防滚动穿透方案
-   /h5-code-skill css            # 专注于 CSS 样式与视口适配
+   # H5 移动端开发与避坑
+   /h5-code-skill audit                      # 对当前页面进行移动端兼容性审查
+   /h5-code-skill fix scroll                 # 获取生产级防滚动穿透方案
+
+   # Bulletproof React 架构与工程规范
+   /bulletproof-react-skill audit            # 审计当前代码库的模块边界与跨 Feature 违规
+   /bulletproof-react-skill feature users    # 生成符合规范的自包含 Feature 模块模板
+   /bulletproof-react-skill api discussions  # 生成 Zod + Fetcher + TanStack Query 三件套
    ```
 2. **自然语言隐式触发**：
    直接询问相关问题，Agent 会自动对照 description 命中并激活该 Skill：
+   > *“帮我设计一个 discussions 功能模块，按照 bulletproof-react 规范组织 API 和组件，注意不要跨 feature 引入 comments。”*
    > *“帮我写一个移动端底部抽屉弹窗组件，注意避免滚动穿透和 iOS 键盘遮挡。”*
 
 ---
